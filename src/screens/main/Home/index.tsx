@@ -5,6 +5,8 @@ import Geolocation from '@react-native-community/geolocation';
 
 import BottomSheet from '~/components/BottomSheet';
 import Button from '~/components/Buttons';
+import { useAppTheme } from '~/theme/theme';
+import makeStyles from './styles';
 
 const Home = () => {
   const [markers, setMarkers] = useState([]);
@@ -18,6 +20,9 @@ const Home = () => {
     latitude: number;
     longitude: number;
   }>(null);
+
+  const theme = useAppTheme();
+  const styles = makeStyles(theme);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -114,33 +119,5 @@ const Home = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  map: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  bottomSheetContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 500,
-  },
-  bottomSheetContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-  },
-});
 
 export default Home;
