@@ -1,33 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Text, Modal } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
+import BottomSheet from '~/components/BottomSheet';
+import Button from '~/components/Buttons';
+
 const Home = () => {
   const [markers, setMarkers] = useState([]);
-  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState<{
+    index: number;
+    marker: any;
+  }>(null);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState(null);
-
-  const handleMapPress = event => {
-    const { coordinate } = event.nativeEvent;
-    setMarkers([...markers, coordinate]);
-  };
-
-  const handleMarkerPress = marker => {
-    setSelectedMarker(marker);
-    setModalVisible(true);
-  };
-
-  const removeMarker = () => {
-    const updatedMarkers = markers.filter(marker => marker !== selectedMarker);
-    setMarkers(updatedMarkers);
-    setModalVisible(false);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  const [currentLocation, setCurrentLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>(null);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -42,18 +32,40 @@ const Home = () => {
     );
   }, []);
 
+  const handleMapPress = event => {
+    const { coordinate } = event.nativeEvent;
+    setMarkers([...markers, coordinate]);
+  };
+
+  const handleMarkerPress = (marker, index) => {
+    setSelectedMarker({ index, marker });
+    setModalVisible(true);
+  };
+
+  const removeMarker = () => {
+    const updatedMarkers = markers.filter(
+      (_, index) => index !== selectedMarker.index,
+    );
+    setMarkers(updatedMarkers);
+    setModalVisible(false);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   if (!currentLocation) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <MapView
-        style={{ flex: 1, width: '100%', height: '100%' }}
+        style={styles.map}
         provider={PROVIDER_GOOGLE}
         onLongPress={handleMapPress}
         showsMyLocationButton={true}
@@ -81,29 +93,54 @@ const Home = () => {
             key={index}
             coordinate={marker}
             title={`Marker ${index + 1}`}
-            onPress={() => handleMarkerPress(marker)}
+            description={`This is marker ${index + 1}`}
+            onPress={() => handleMarkerPress(marker, index)}
           />
         ))}
       </MapView>
 
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: 20,
-              borderRadius: 10,
-              elevation: 5,
-            }}>
-            <Text>Options for Marker</Text>
+      <BottomSheet
+        isVisible={modalVisible}
+        setIsVisible={setModalVisible}
+        isFullScreen={false}>
+        <View style={styles.bottomSheetContent}>
+          <Text>This is {selectedMarker?.index} interest point</Text>
+          <View>
             <Button title="Remove Marker" onPress={removeMarker} />
             <Button title="Close" onPress={closeModal} />
           </View>
         </View>
-      </Modal>
+      </BottomSheet>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  map: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  bottomSheetContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 500,
+  },
+  bottomSheetContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+});
 
 export default Home;

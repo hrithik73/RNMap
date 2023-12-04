@@ -13,6 +13,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { DarkTheme, DefaultTheme } from './theme/theme';
 import { persistor, store } from './redux/store';
 import MainNavigator from './navigations/MainNavigator';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 /**
  * Main App component
@@ -41,11 +43,15 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
           <PaperProvider theme={theme}>
             <NavigationContainer theme={theme}>
-              <StatusBar
-                backgroundColor={isDarkTheme ? 'black' : 'white'}
-                barStyle={isDarkTheme ? 'light-content' : 'dark-content'}
-              />
-              <MainNavigator />
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
+                  <StatusBar
+                    backgroundColor={isDarkTheme ? 'black' : 'white'}
+                    barStyle={isDarkTheme ? 'light-content' : 'dark-content'}
+                  />
+                  <MainNavigator />
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
             </NavigationContainer>
           </PaperProvider>
         </QueryClientProvider>

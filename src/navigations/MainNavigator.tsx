@@ -37,7 +37,7 @@ const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused, color }) => (
             <TabIcon
-              name={focused ? 'settings' : 'settings-outline'}
+              name={focused ? 'bookmark' : 'bookmark-outline'}
               color={color}
             />
           ),
