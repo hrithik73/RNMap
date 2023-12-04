@@ -11,7 +11,7 @@ Features
 #### Step 1: Clone the repo
 
 ```bash
-git clone https://github.com/hrithik73/PushTask
+git clone https://github.com/hrithik73/RNMap
 ```
 
 #### Step 2: Install the dependencies by running
